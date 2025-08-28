@@ -1,0 +1,38 @@
+body {
+  padding: 0px;
+  margin: 0px;
+  min-height: 100vh;
+  height: auto;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+  align-items: center;
+}
+.board {
+  height: 30em;
+  width: 30em;
+  background-color: blanchedalmond;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+}
+.BoardRow {
+  /* background-color: red; */
+  height: 3.5em;
+  width: 30em;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-around;
+}
+
+.boxB {
+  background-color: black;
+  height: 3.5em;
+  width: 3.5em;
+}
+.boxW {
+  background-color: white;
+  height: 3.5em;
+  width: 3.5em;
+}
