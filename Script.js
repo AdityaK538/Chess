@@ -40,6 +40,7 @@ const EventStarter = (chessCol) => {
   };
   colorChanger(currentData);
 };
+const setPieces = (currentData) => {};
 const colorChanger = (currentData) => {
   if (currentData.active == "true") {
     resetBoardGame();
