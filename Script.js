@@ -1,3 +1,4 @@
+//Creating board
 const chessBoardCreation = (startButton) => {
   startButton.disabled = true;
   let board = document.querySelector(".board");
@@ -21,8 +22,56 @@ const chessBoardCreation = (startButton) => {
     blockColour = blockColour === 1 ? 2 : 1;
     board.appendChild(chessRows);
   }
+  settingPieces();
+};
+//Initializing pieces
+const settingPieces = () => {
+  let board = document.querySelector(".board");
+  console.log(board);
+
+  for (let checkRow = 0; checkRow < 8; checkRow++) {
+    let updateCheckRow = checkRow + 1;
+    let rowBoxes = board.querySelectorAll(`[data-row="${updateCheckRow}"]`);
+    console.log(`row boxs = ${rowBoxes.length}`);
+
+    rowBoxes.forEach((box, collumnIndex) => {
+      //(?) this checks for the element availability and continuity
+      let pieceType = pieces[updateCheckRow]?.[collumnIndex];
+      if (pieceType) {
+        let img = document.createElement("img");
+        img.src = `./${pieceType}.png`;
+        box.appendChild(img);
+      }
+    });
+  }
 };
 
+const pieces = {
+  1: [
+    "rookW",
+    "knightW",
+    "bishopW",
+    "queenW",
+    "kingW",
+    "bishopW",
+    "knightW",
+    "rookW",
+  ],
+  2: ["pawnW", "pawnW", "pawnW", "pawnW", "pawnW", "pawnW", "pawnW", "pawnW"],
+  7: ["pawnB", "pawnB", "pawnB", "pawnB", "pawnB", "pawnB", "pawnB", "pawnB"],
+  8: [
+    "rookB",
+    "knightB",
+    "bishopB",
+    "queenB",
+    "kingB",
+    "bishopB",
+    "knightB",
+    "rookB",
+  ],
+};
+///////////////////////////////////////////////////////////////////
+// initialization & data fetching
 const EventStarter = (chessCol) => {
   //Dataset always returns string
   //Convert it into number Where needed
@@ -31,116 +80,44 @@ const EventStarter = (chessCol) => {
   let rowPosition = Number(chessCol.dataset.row);
   let columnPosition = Number(chessCol.dataset.column);
   let active = chessCol.dataset.active;
+  let pieceType = currentPiece(chessCol);
   const currentData = {
     element: element,
     color: color,
     rowPosition: rowPosition,
     columnPosition: columnPosition,
     active: active,
+    pieceType: pieceType,
   };
-  colorChanger(currentData);
+  handleSelection(currentData);
 };
-const setPieces = (currentData) => {};
-const colorChanger = (currentData) => {
-  if (currentData.active == "true") {
-    resetBoardGame();
-    currentData.active = "false";
-  } else {
-    resetBoardGame();
-    currentData.active = "true";
-    path(currentData);
+////////////////////////////////////////////////////////////////////////////////////////
+const currentPiece = (box) => {
+  let img = box.querySelector("img");
+  let src = img.getAttribute("src");
+  let imageType = src.split("/").pop().replace(".png", "");
+  console.log(imageType);
+  return imageType;
+};
+////////////////////////////////////////////////////////////////////////////////////////
+
+let selectedPiece = null;
+
+const handleSelection = (currentData) => {
+  //selectedPiece = look for a peace previous to the move
+  //currentData.pieceType = cheking the current piece availability
+  if (!selectedPiece && currentData.pieceType) {
+    console.log("highlight - no, yes");
+    selectedPiece = currentData;
+  } else if (selectedPiece && selectedPiece.element == currentData.element) {
+    console.log("clear highlight - yes, same");
+    selectedPiece = null;
+  } else if (selectedPiece && currentData.pieceType) {
+    console.log("clear highlight - yes, yes");
+    selectedPiece = currentData;
+  } else if (selectedPiece && !currentData.pieceType) {
+    console.log("clear highlight- yes, no");
+    selectedPiece = null;
   }
 };
-const resetBoardGame = () => {
-  let allSquares = document.querySelectorAll(".boxW, .boxB");
-  allSquares.forEach((square) => {
-    let color = Number(square.dataset.color);
-    square.style.backgroundColor = baseColorSelector(color);
-    square.dataset.active = "false";
-  });
-};
-
-const baseColorSelector = (color) => {
-  return color === 1 ? "white" : "black";
-};
-
-////////////////////////////Piece-MoveSet/////////////////////////
-
-const path = (currentData) => {
-  for (let hor = 1; hor <= 8; hor++) {
-    for (let ver = 1; ver <= 8; ver++) {
-      //diagnalPath(currentData, hor, ver)
-      //straightPath(currentData, hor, ver)
-      if (diagnalPath(currentData, hor, ver)) {
-        let square = document.querySelector(
-          `[data-row="${hor}"][data-column="${ver}"]`
-        );
-        if (square) {
-          square.style.backgroundColor = "brown";
-        } else {
-          square.style.backgroundColor = baseColorSelector(currentData.color);
-        }
-      }
-    }
-  }
-};
-
-//////////////////////////////////pathPattern//////////////////////
-
-const straightPath = (currentData, hor, ver) => {
-  const logic =
-    currentData.rowPosition == hor || currentData.columnPosition == ver;
-  return logic;
-};
-const diagnalPath = (currentData, hor, ver) => {
-  const logic =
-    Math.abs(currentData.rowPosition - hor) ==
-    Math.abs(currentData.columnPosition - ver);
-  return logic;
-};
-const pawnPath = (currentData, hor, ver) => {
-  if (currentData.color == 1) {
-    if (
-      currentData.columnPosition === ver &&
-      hor === currentData.rowPosition + 1
-    ) {
-      return true;
-    }
-    if (
-      currentData.columnPosition === ver &&
-      hor === currentData.rowPosition + 2 &&
-      currentData.rowPosition == 2
-    ) {
-      return true;
-    }
-    if (
-      Math.abs(currentData.columnPosition - ver) === 1 &&
-      currentData.rowPosition + 1 === hor
-    ) {
-      return true;
-    }
-  }
-
-  if (currentData.color == 2) {
-    if (
-      currentData.columnPosition === ver &&
-      hor === currentData.rowPosition - 1
-    ) {
-      return true;
-    }
-    if (
-      currentData.columnPosition === ver &&
-      hor === currentData.rowPosition - 2 &&
-      currentData.rowPosition == 2
-    ) {
-      return true;
-    }
-    if (
-      Math.abs(currentData.columnPosition - ver) === 1 &&
-      currentData.rowPosition - 1 === hor
-    ) {
-      return true;
-    }
-  }
-  return false;
-};
+///////////////////////////////////////////////////////////////////////////////////////////
